@@ -6,15 +6,15 @@ A list of what I've read this year and what I'm currently reading. You can see m
 
 ## In Progress
 
-1. [How to Take Smart Notes](https://www.goodreads.com/book/show/34507927-how-to-take-smart-notes) by Sönke Ahrens
+1. [How To Solve It!](https://www.goodreads.com/book/show/192221.How_to_Solve_It) by George Pólya
 
-        - Start: Jan 29, 2021
+        - Start: Jan 27, 2021
 
 1. [Release It!](https://www.goodreads.com/book/show/1069827.Release_It_) by Michael T. Nygard
 
         - Start: Nov 25, 2020
 
-1. [The Dark Forest](https://www.goodreads.com/book/show/1069827.Release_It_) by Cixin Liu
+1. [The Dark Forest](https://www.goodreads.com/book/show/23168817-the-dark-forest) by Cixin Liu
 
         - Start: Jan 27, 2021
 
@@ -41,4 +41,9 @@ A list of what I've read this year and what I'm currently reading. You can see m
         - Start: April 24, 2020
         - Finished: Jan 3, 2021
 
+
+1. [How to Take Smart Notes](https://www.goodreads.com/book/show/34507927-how-to-take-smart-notes) by Sönke Ahrens
+
+        - Start: Jan 17, 2021
+        - Finished: Jan 31, 2021
 
