@@ -19,6 +19,7 @@ scalable distributed systems. Things I like (in no particular order):
 * Hiking and traveling (though I haven't done much of either in the past year)
 * [TDD](https://en.wikipedia.org/wiki/Test-driven_development)
 * Cooking (a lot of my time not spent on the computer is spent in the kitchen)
+* The pursuit to brew the perfect cup of coffee
 * Loki - my dog. He's a jindo-corgi mix who's a rescue from South Korea courtesy of the kind and caring folks at [Korean K9 Rescue](https://www.koreank9rescue.org/)
 
 {{<figure
@@ -31,12 +32,12 @@ scalable distributed systems. Things I like (in no particular order):
     captionStyle="background:none; color: white; font-style: italic"
     >}}
 
-* Reading, current goal is to get through 50 books this year, as of the end of January I'm at 4 so right on schedule. See my list [here](/reading-list)
+* Reading, current goal is to get through 50 books this year, as of the end of January I'm at 5 so right on schedule. See my list [here](/reading-list)
 
 
 Some relevant links:
 
-Email: [john@johnmaguiredeveloper.com](mailto:)
+Email: [john@johnmaguiredeveloper.com](mailto:john@johnmaguiredeveloper.com?subject=[WebsiteContact])
 
 [Github](https://github.com/jm96441n)
 
