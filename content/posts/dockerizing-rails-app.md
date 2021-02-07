@@ -196,7 +196,7 @@ environment separately and discuss the necessary steps to get each environment u
 ### Development Environment Setup
 
 #### The Docker Stages
-Let's being with looking at the Docker stages necessary for building the dev image.
+Let's begin with looking at the Docker stages necessary for building the dev image.
 ```Dockerfile
 # Setup development specific dependencies
 FROM node_deps AS dev_deps
@@ -244,7 +244,7 @@ In the `bin` directory of rails app we're going to add a file named `dev_entry` 
 each time we start our dev server. First we'll want to ensure that all of our migrations have been run, we'll clear out some old log files,
 and lastly spin up our dev server.
 
-Note: Don't forget to give yourself permission for this file: `chmod +x ./bin/docker` so you can run it.
+Note: Don't forget to give yourself permission for this file: `chmod +x ./bin/dev_entry` so you can run it.
 
 ### Test Environment
 
@@ -286,9 +286,11 @@ the container.
 
 #### bin/docker
 
-This is a bin file that we'll be adding to handle building and running our application locally. For this section we'll just be discussing
-the path taken by the `dev` and `test` arguments, later on in the [Deploying to Production](#deploying-to-production) section
-we'll discuss the `deploy` path.
+This is a bin file that we'll be adding to handle building and running our application locally. One thing to notice is that
+we'll be mounting the majority of the application directories as volumes rather than copying them in so that we get hot reloading
+of changes to our app code. This gives us the benefit of not having to stop and restart our container for changes to be seen (except for changes
+that require a restart to the application server.) For this section we'll just be discussing the path taken by the `dev` and `test` arguments,
+later on in the [Deploying to Production](#deploying-to-production) section we'll discuss the `deploy` path.
 
 ```ruby
 #!/usr/bin/env ruby
