@@ -8,7 +8,7 @@ A list of what I've read this year and what I'm currently reading. You can see m
 
 1. [How To Solve It!](https://www.goodreads.com/book/show/192221.How_to_Solve_It) by George Pólya
 
-        - Start: Jan 27, 2021
+        - Start: Feb 02, 2021
 
 1. [Release It!](https://www.goodreads.com/book/show/1069827.Release_It_) by Michael T. Nygard
 
@@ -16,7 +16,7 @@ A list of what I've read this year and what I'm currently reading. You can see m
 
 1. [The Dark Forest](https://www.goodreads.com/book/show/23168817-the-dark-forest) by Cixin Liu
 
-        - Start: Jan 27, 2021
+        - Start: Jan 26, 2021
 
 
 ## Completed
