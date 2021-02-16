@@ -20,18 +20,17 @@ showFullContent = false
 1. [Wrapping Up](#wrapping-up)
 
 ## Intro
-So today we're going to look at taking a rails 6 application and setting it
-up to use a single Dockerfile to manage all of our environments (dev, test, and prod) and
-deploy that application to Heroku. So for a quick overview today we'll be using:
+So today we're going to look at taking a Rails 6 application, and dockerizing it via a single Dockerfile to manage all of
+our environments (dev, test, and prod), and deploy that application to Heroku. So for a quick overview today we'll be using:
 
 1. Docker
 1. Ruby 2.7.2
 1. Rails 6.1
 1. Postgres 13
-1. NodeJs 14
+1. NodeJS 14
 
-We'll be interacting with the postgres instance running on the host machine, though
-this could easily be switched out for postgres running in another container (we'll leave that as an exercise for the reader for now).
+We'll be interacting with the Postgres instance running on the host machine, though
+this could easily be switched out for Postgres running in another container (we'll leave that as an exercise for the reader for now).
 
 You can find the example application is running [here](https://rails-docker-example.herokuapp.com/) and
 you can find the source code [here](https://github.com/jm96441n/rails_docker).
@@ -141,27 +140,27 @@ RUN apk add --update \
     yarn
 
 WORKDIR /app
-# install bundler
+# install Bundler
 RUN gem install bundler
 # install rails
 RUN gem install rails
 
 ```
 
-We're going to be using the ruby 2.7.2 alpine docker image, which ships with v3.13 of Alpine Linux which will help keep our final container size
-smaller than had we used Ubuntu. Following that we'll be installing `build-base` which is the Alpine counterpart to `build-essential` on Ubuntu
-and contains many of the essential applications we'll need to compile applications from source. In addtion to `build-base` we'll also be adding `git`
-and `tzdata` which helps with timezone management.
+This first stage is where we want to keep our dependencies that are least likely to change, as whenever we make a change 
+to a particular stage we have to rebuild all the following stages.
 
-Following those base dependencies we then install our application dependencies, which are pretty straightforward. We'll need to add `node` for
-handling our JS engine, `postgresql-client` and `postgresql-dev` for handling our connections to postgres, and `yarn` for JS package management.
-We then move on to setting the working directory for our application and installing bundler and rails.
+We're going to be using the Ruby 2.7.2 Alpine Docker image as our base, which ships with v3.13 of Alpine Linux which will help
+keep our final container size smaller than if we had used Ubuntu. Following that we'll be installing `build-base`, which 
+is the Alpine counterpart to `build-essential` on Ubuntu, and contains many of the essential applications we'll need to 
+compile applications from source. In addtion to `build-base` we'll also be adding `git`, and `tzdata` which helps with timezone management.
 
-This stage is where we want to keep our dependencies that are least likely to change, as whenever we make a change to particular stage we have
-to rebuild the following stages.
+Following those base dependencies we'll then move on to installing our application dependencies. We'll need to add `node` for
+handling our JS engine, `postgresql-client` and `postgresql-dev` for handling our connections to Postgres, and `yarn` for JS package management.
+We then move on to setting the working directory for our application and installing Bundler and Rails.
 
 ## Ruby Gems/Node Packages
-Next up we'll be installing the base set of ruby gems that we'll need across our environments and our node modules.
+Next up we'll be installing the base set of Ruby gems that we'll need across our environments and our node modules.
 
 ```Dockerfile
 FROM base_deps as ruby_deps
@@ -178,9 +177,10 @@ RUN yarn install --check-files
 ```
 
 This section is another pretty straightforward one, for both stages we'll be copying over the files responsible for
-handling what dependencies to install (Gemfiles for ruby, package.json and yarn.lock for JS). It's at this point that I'm
-going to point out that we also have a `.dockerignore` file in our application directory that tells docker to ignore the
+handling what dependencies to install (`Gemfile`/`Gemfile.lock` for Ruby, `package.json`/`yarn.lock` for JS). It's at this point that I'm
+going to point out that we also have a `.dockerignore` file in our application directory that tells Docker to ignore the
 `node_modules` directory from the host machine.
+
 ```.dockerignore
 **/node_modules/
 ```
@@ -188,8 +188,10 @@ going to point out that we also have a `.dockerignore` file in our application d
 This is necessary because we don't want to copy our host `node_modules` directory at any point because that will cause
 yarn to fail its integrity check due to the modules being run on a different base OS than what they were installed on.
 
-It is at this point that our three environments are going to start differing in their builds, so we're going to approach each
-environment separately and discuss the necessary steps to get each environment up and running.
+From here on out our three environments are going to start differing in their builds, so we're going to approach each
+environment separately and discuss the necessary steps to get each environment up and running. We'll discuss both dev and
+test under the [Local Development](#local-development) section and then our production setup under the 
+[Deploying to Production](#deploying-to-production) section.
 
 ## Local Development
 
@@ -212,11 +214,11 @@ ENV DATABASE_HOST=docker.for.mac.localhost
 CMD ["bin/dev_entry"]
 ```
 
-You'll see the first thing we do is copy our already installed dependencies from the previous stages, which allows us to utilize the already installed dependencies
-without having to reinstall them on each build (assuming they haven't changed.) From there we then install the test and development
-sections of our Gemfile and move on to the final stage. In the final stage we set the working directory and set an environment
-variable which allows us to talk to our local postgres from within the app container. Finally, we set our run command to be `bin/dev_entry`
-which is a file that we're going to talk about in the next sub-section.
+You'll see the first thing we do is copy our already installed dependencies from the previous stages, which allows us to utilize 
+the already installed dependencies without having to reinstall them on each build (assuming they haven't changed.) From there 
+we then install the test and development sections of our Gemfile and move on to the final stage. In the last stage we set the 
+working directory and set an environment variable which allows us to talk to our local Postgres from within the app container. 
+Finally, we set our run command to be `bin/dev_entry` which is a file that we're going to talk about in the next sub-section.
 
 #### bin/dev_entry
 ```ruby
@@ -240,8 +242,9 @@ FileUtils.chdir APP_ROOT do
   system! 'RAILS_ENV=development bundle exec rails s -b 0.0.0.0'
 end
 ```
-In the `bin` directory of rails app we're going to add a file named `dev_entry` which is going to describe the steps we want to take
-each time we start our dev server. First we'll want to ensure that all of our migrations have been run, we'll clear out some old log files,
+
+In the `bin` directory of Rails app we're going to add a file named `dev_entry` which is going to describe the steps we want to take
+each time we start our dev server. First we'll want to ensure that all of our migrations have been run, then we'll clear out some old log files,
 and lastly spin up our dev server.
 
 Note: Don't forget to give yourself permission for this file: `chmod +x ./bin/dev_entry` so you can run it.
@@ -274,14 +277,14 @@ CMD ["bundle", "exec", "rspec"]
 
 For the test environment we need to copy over the already installed base dependencies just like we did for the development environment.
 Following that we need to install the `chromium`, `chromium-chromedriver`, and some python packages in order to install selenium to run
-our system tests through a chrome headless browser, and finally we install the specific gems for the test environment.
+our system tests through a chrome headless browser. Finally we install the specific gems for the test environment.
 
 The actual `test` stage looks really similar to the `dev` stage, but in this case we'll be running `bundle exec rspec` as our run command.
 
 ### Running the Application Locally
 
 In this next section we're going to look at another bin file we'll be adding along with a few changes we need to make to our `database.yml`
-file to run the application locally and wrapping up with an additional selenium drive we'll want to add to run our tests from inside
+file to run the application locally and wrapping up with an additional selenium driver we'll want to add to run our tests from inside
 the container.
 
 #### bin/docker
@@ -326,6 +329,7 @@ def usage
   pp 'Usage'
   pp '"bin/docker dev" for running the container locally'
   pp '"bin/docker test" to run the tests'
+  pp '"bin/docker deploy" to build and deploy to production'
 end
 
 # builds the image and run the container
@@ -334,12 +338,12 @@ def build_and_run(env)
   run(env)
 end
 
-# builds the docker container
+# builds the Docker container
 def build(env)
   system!("docker build --target #{env} -t jmaguire5588/rails_docker:#{env} ./")
 end
 
-# build the docker command into a string to be run
+# build the Docker command into a string to be run
 def run(env)
   cmd = "docker run --rm --name=rails_docker_#{env} "
   cmd << '-p 3000:3000 -p 5432:5432 '
@@ -348,7 +352,7 @@ def run(env)
   system!(cmd)
 end
 
-# Builds a list of the current files in the directory to mount to your docker container for
+# Builds a list of the current files in the directory to mount to your Docker container for
 # local dev, does not mount node_modules
 def mounted_volumes(env)
   non_mounted_files = env == 'dev' ? NON_MOUNTED_DEV_FILES : NON_MOUNTED_TEST_FILES
@@ -385,17 +389,17 @@ end
 ```
 
 The main source of complexity here is the files that we're mounting, and you'll notice we have two constants `NON_MOUNTED_DEV_FILES` and
-`NON_MOUNTED_TEST_FILES`. As the names imply one is the files/folders we won't be mounting in development and the other are files we don't want to
-mount for testing. In both we want to exclude any dependency related files (package.json, yarn.lock, Gemile, and Gemfile.lock) as well as the README. You'll
-also notice we exclude the `node_modules` directory because it already exists from a previous stage. The difference between our dev and test environments is that
-in test we mount the spec directory and for dev we do not (as we don't need it).
+`NON_MOUNTED_TEST_FILES`. As the names imply one is the files/folders we won't be mounting in development and the other are files we don't want 
+to mount for testing. In both we want to exclude any dependency related files (package.json, yarn.lock, Gemile, and Gemfile.lock) as well as 
+the README. You'll also notice we exclude the `node_modules` directory because it already exists from a previous stage. The difference between 
+our dev and test environments is that in test we mount the spec directory and for dev we do not (as we don't need it).
 
-The reason we go about this kinda obtuse way (manually mounting all directories that we want instead of mounting the entire app directory) is that
-we want to use the `node_modules` directory we built earlier and if we mount the entire app directory from the host machine we lose any existing
-files/folders in that directory. I did some investigation into installing the `node_modules` directory to a folder outside the app directory and it
-ended up being more trouble than it was worth.
+The reason we go about this kinda obtuse way (manually mounting all directories that we want instead of mounting the entire app directory) is 
+that we want to use the `node_modules` directory we built earlier and if we mount the entire app directory from the host machine 
+we lose any existing files/folders in that directory. I did some investigation into installing the `node_modules` directory to a 
+folder outside the app directory and it ended up being more trouble than it was worth.
 
-Wrapping up, this command takes in a command line argument, either `help`, `dev`, or `test` and then builds and runs the container
+Wrapping up, this command takes in a command line argument, either `help`, `dev`, `test`, or `deploy` and then builds and runs the container
 for that particular target.
 
 Note: Don't forget to give yourself permission for this file: `chmod +x ./bin/docker` so you can run it.
@@ -423,13 +427,13 @@ test:
 ```
 
 The main change here is that we'll be specifying the development and test host as the environment variable that we set
-in our Dockerfile (the `ENV DATABASE_HOST=docker.for.mac.localhost` variable that we set.) This just allows our rails
-application talk to our local postgres.
+in our Dockerfile (the `ENV DATABASE_HOST=docker.for.mac.localhost` variable that we set.) This just allows our Rails
+application talk to our local Postgres.
 
 #### Test Setup
 
-We'll want to start by removing the `webdrivers` gem from out Gemfile as there are still some issues with the gem on Alpine where it installs the chromedriver
-binary (https://github.com/titusfortner/webdrivers/issues/78).
+We'll want to start by removing the `webdrivers` gem from out Gemfile as there are still some issues with the gem dealing with
+the install location for the webdriver binaries on Alpine (https://github.com/titusfortner/webdrivers/issues/78).
 
 Following that we want to add a new support file to run our integration tests through our installed version of chrome. To do that first
 we have to tell rspec to include our support files by adding the following line to our `rspec_helper`.
@@ -469,9 +473,9 @@ This looks complicated, but all it does is set up a headless chrome driver to ru
 
 ## Deploying to Production
 
-Now that we've got the hard parts out of the way, let's deploy our application to Heroku, now here we'll be using the
-[Heroku Container Registry](https://devcenter.heroku.com/articles/container-registry-and-runtime), though you can easily use
-any other container registry. Before we get into the actual deployment process, let's take a look at the last stage of our
+Now that we've got the hard parts out of the way, let's deploy our application to Heroku. We'll be using the
+[Heroku Container Registry](https://devcenter.heroku.com/articles/container-registry-and-runtime) to host our container, though 
+you can easily use any other container registry. Before we get into the actual deployment process, let's take a look at the last stage of our
 Dockerfile which contains the `prod` build target.
 
 ```Dockerfile
@@ -487,7 +491,8 @@ CMD ["bin/prod_entry"]
 ```
 
 Again, this looks really similar to our other environments, the main differences here are:
-1. Giving the production server access to our `/bin/prod_entry` file (in a more formalized environment we would want to set up a separate user and only give that user access to that file)
+1. Giving the production server access to our `/bin/prod_entry` file (in a more formalized environment we would want to set 
+up a separate user and only give that user access to that file)
 1. Copying our `node_modules` directory over from the `node_deps` stage into the current stage *after* we copy in the application directory
 so that we don't overwrite `node_modules`.
 1. Pre-compiling our assets for production.
@@ -559,12 +564,12 @@ def build_and_deploy
 end
 ```
 
-So here we see two additonal functions, one is to ensure that we intend to deploy the prod and the others are to build
+So here we see two additonal functions, one is to ensure that we intend to deploy the prod and the other is to build
 the production image and push it to the heroku container registry and then release it.
 
 
 ## Wrapping Up
 
-So that about does it! After following these steps you now have a rails app that is using Docker in your dev, test, and
+So that about does it! After following these steps you now have a Rails app that is using Docker in your dev, test, and
 production environments! The example application is deployed [here](https://rails-docker-example.herokuapp.com/) and
 you can find the source code [here](https://github.com/jm96441n/rails_docker)

@@ -14,9 +14,6 @@ A list of what I've read this year and what I'm currently reading. You can see m
 
         - Start: Nov 25, 2020
 
-1. [The Dark Forest](https://www.goodreads.com/book/show/23168817-the-dark-forest) by Cixin Liu
-
-        - Start: Jan 26, 2021
 
 
 ## Completed
@@ -47,3 +44,7 @@ A list of what I've read this year and what I'm currently reading. You can see m
         - Start: Jan 17, 2021
         - Finished: Jan 31, 2021
 
+1. [The Dark Forest](https://www.goodreads.com/book/show/23168817-the-dark-forest) by Cixin Liu
+
+        - Start: Jan 26, 2021
+        - Finished: Feb 9, 2021
