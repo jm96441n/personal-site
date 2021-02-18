@@ -15,7 +15,6 @@ A list of what I've read this year and what I'm currently reading. You can see m
         - Start: Nov 25, 2020
 
 
-
 ## Completed
 
 1. [Little Eyes](https://www.goodreads.com/book/show/48635845-little-eyes) by Samanta Schweblin
