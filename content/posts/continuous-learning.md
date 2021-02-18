@@ -17,8 +17,24 @@ First let's start by defining what a Continuous Learning Program is:
 > A continuous learning program is a set of clubs/groups that meet with the explicit goal of expanding their skill set.
 
 Pretty simple, but let's look at the different types of groups and what their specific functions are.
+1. [Lunch and Learn](#lunch-and-learn)
+1. [Video Club](#video-club)
+1. [Book Club](#book-club)
+1. [Code Dojo](#code-dojo)
+1. [The Refactory](#the-refactory)
 
-### Video Club
+## Lunch and Learn
+This one is less of a club and more a weekly/bi-weekly type meeting and odds are your company is already doing it! The
+idea here is that anyone in the organization can volunteer to present on a topic during a group lunch. We usually try to
+keep these meetings at around an hour in length and keep the topics open to whatever the presenter wants to share. Some
+examples of topics we've had in the past are "The Magic of Git Bisect", "Book Review: The Economics of Open Source",
+"Refactoring Patterns: Class Extraction", as well as an assorted bunch of different productivity hacks. The goal is to
+allow the presenters to showcase whatever knowledge it is that they have, whether it's directly related to software
+development or not. This can also lead to some extensions such as "Summer of Code", where anyone in the org puts up on a
+spreadsheet different topics they would like to learn more about, and then other members can volunteer to research and
+present on them.
+
+## Video Club
 The first club we'll be discussing is the one that requires the least amount of commitment from its members: Video Club.
 The basic outline for Video Club is that the club meets once a week to watch a conference talk and then discuss their thoughts
 on the content of the video. That's it. This is the club with the least commitment from the members because all they have to do is show up
@@ -54,6 +70,7 @@ they will be refactoring code, so that the majority of the groups time is spent 
 
 >
 
-So that wraps it up for the actual clubs that consitute my Continuous Learning program. In a future post I'll go into more
-detail as to the structure that ties them all together and also how to pitch the idea to upper management to get buy in on
-running these programs.
+So that wraps it up for the actual clubs that consitute my Continuous Learning program. One thing to keep in mind is that these clubs
+should be open to everyone, not just the engineering organization. We'll go into more detail as to why in a future post on selling
+Upper Management on implementing these clubs, but the general idea is tha we want as much diversity in
+background/thought as possible in these clubs: the more viewpoints/ideas the better!

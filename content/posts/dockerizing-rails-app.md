@@ -1,7 +1,7 @@
 +++
 title = "Dockerizing A Rails App"
 date = "2021-02-05T07:05:02-05:00"
-author = ""
+author = "John Maguire"
 authorTwitter = "" #do not include @
 cover = ""
 tags = ["Docker", "Rails", "Automation"]
