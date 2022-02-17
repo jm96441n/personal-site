@@ -1,6 +1,6 @@
 +++
 title = "Continuous Learning: Part 2 — Selling it to Upper Management"
-date = "2021-02-18T12:14:05-05:00"
+date = "2022-02-02T12:14:05-05:00"
 author = "John Maguire"
 authorTwitter = "" #do not include @
 cover = ""
@@ -24,10 +24,10 @@ communication. As organizations grows and the number of teams increase, knowledg
 They're how you end up a myriad of different solutions for the same problem across your different teams. The good news
 is that a Continuous Learning program can help to alleviate knowledge silos! By getting members of different teams
 together at least once a week, and dicussing problems they're currently solving or have solved through the frame of the
-current topic of discussion. [Lunch and Learns](/posts/continuous-learning#lunch-and-learn) are a great avenue for this, 
-as teams can share solutions they've come across to a larger audience and potentially help other teams solve related 
-problems. [Code Dojo](/posts/continuous-learning#code-dojo) and [The Refactory](/posts/continuous-learning#the-refactory) also play into this idea as well, for example if the problem being solved calls 
-for recursion and engineer who is particularly skilled at recursion can share their knowledge on solving recursive problems 
+current topic of discussion. [Lunch and Learns](/posts/continuous-learning#lunch-and-learn) are a great avenue for this,
+as teams can share solutions they've come across to a larger audience and potentially help other teams solve related
+problems. [Code Dojo](/posts/continuous-learning#code-dojo) and [The Refactory](/posts/continuous-learning#the-refactory) also play into this idea as well, for example if the problem being solved calls
+for recursion and engineer who is particularly skilled at recursion can share their knowledge on solving recursive problems
 which increases the skill of the other engineers present. This line of reasoning is going to lead us to our next topic: Manufactured Serendipity.
 
 ## Manufactured Serendipity
@@ -46,8 +46,8 @@ programs affect the individual members. Just like how you wouldn't say that phys
 working with them, we wouldn't expect our tools as knowledge workers to be sufficiently maintained without specific work
 towards maintenance. Through clubs like [Book Club](/posts/continuous-learning#book-club) and [Video Club](/posts/continuous-learning#video-club) we're able to increase the baseline skill of our
 engineers overall, and then through clubs like [Code Dojo](/posts/continuous-learning#code-dojo) and [The Refactory](/posts/continuous-learning#the-refactory) we're able to engage in [Deliberate
-Practice](https://codingdojo.org/DeliberatePractice/) and perform the actual maintenance on our tools. Another good 
-analogy to use here is that sports teams don't test their skills in prod (the actual game) and neither should we, in 
+Practice](https://codingdojo.org/DeliberatePractice/) and perform the actual maintenance on our tools. Another good
+analogy to use here is that sports teams don't test their skills in prod (the actual game) and neither should we, in
 fact the higher the stakes the more practice we should be engaging in.
 
 ## Builds Slack into Dev Process

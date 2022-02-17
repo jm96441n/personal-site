@@ -1,6 +1,6 @@
 +++
 title = "Continuous Learning: Part 1 - The Clubs"
-date = "2021-01-31T12:56:35-05:00"
+date = "2021-12-15T12:56:35-05:00"
 author = "John Maguire"
 authorTwitter = "" #do not include @
 cover = ""

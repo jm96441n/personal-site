@@ -1,6 +1,6 @@
 +++
 title = "Dockerizing A Rails App"
-date = "2021-02-05T07:05:02-05:00"
+date = "2022-01-20T07:05:02-05:00"
 author = "John Maguire"
 authorTwitter = "" #do not include @
 cover = ""
@@ -147,12 +147,12 @@ RUN gem install rails
 
 ```
 
-This first stage is where we want to keep our dependencies that are least likely to change, as whenever we make a change 
+This first stage is where we want to keep our dependencies that are least likely to change, as whenever we make a change
 to a particular stage we have to rebuild all the following stages.
 
 We're going to be using the Ruby 2.7.2 Alpine Docker image as our base, which ships with v3.13 of Alpine Linux which will help
-keep our final container size smaller than if we had used Ubuntu. Following that we'll be installing `build-base`, which 
-is the Alpine counterpart to `build-essential` on Ubuntu, and contains many of the essential applications we'll need to 
+keep our final container size smaller than if we had used Ubuntu. Following that we'll be installing `build-base`, which
+is the Alpine counterpart to `build-essential` on Ubuntu, and contains many of the essential applications we'll need to
 compile applications from source. In addtion to `build-base` we'll also be adding `git`, and `tzdata` which helps with timezone management.
 
 Following those base dependencies we'll then move on to installing our application dependencies. We'll need to add `node` for
@@ -190,7 +190,7 @@ yarn to fail its integrity check due to the modules being run on a different bas
 
 From here on out our three environments are going to start differing in their builds, so we're going to approach each
 environment separately and discuss the necessary steps to get each environment up and running. We'll discuss both dev and
-test under the [Local Development](#local-development) section and then our production setup under the 
+test under the [Local Development](#local-development) section and then our production setup under the
 [Deploying to Production](#deploying-to-production) section.
 
 ## Local Development
@@ -214,10 +214,10 @@ ENV DATABASE_HOST=docker.for.mac.localhost
 CMD ["bin/dev_entry"]
 ```
 
-You'll see the first thing we do is copy our already installed dependencies from the previous stages, which allows us to utilize 
-the already installed dependencies without having to reinstall them on each build (assuming they haven't changed.) From there 
-we then install the test and development sections of our Gemfile and move on to the final stage. In the last stage we set the 
-working directory and set an environment variable which allows us to talk to our local Postgres from within the app container. 
+You'll see the first thing we do is copy our already installed dependencies from the previous stages, which allows us to utilize
+the already installed dependencies without having to reinstall them on each build (assuming they haven't changed.) From there
+we then install the test and development sections of our Gemfile and move on to the final stage. In the last stage we set the
+working directory and set an environment variable which allows us to talk to our local Postgres from within the app container.
 Finally, we set our run command to be `bin/dev_entry` which is a file that we're going to talk about in the next sub-section.
 
 #### bin/dev_entry
@@ -389,14 +389,14 @@ end
 ```
 
 The main source of complexity here is the files that we're mounting, and you'll notice we have two constants `NON_MOUNTED_DEV_FILES` and
-`NON_MOUNTED_TEST_FILES`. As the names imply one is the files/folders we won't be mounting in development and the other are files we don't want 
-to mount for testing. In both we want to exclude any dependency related files (package.json, yarn.lock, Gemile, and Gemfile.lock) as well as 
-the README. You'll also notice we exclude the `node_modules` directory because it already exists from a previous stage. The difference between 
+`NON_MOUNTED_TEST_FILES`. As the names imply one is the files/folders we won't be mounting in development and the other are files we don't want
+to mount for testing. In both we want to exclude any dependency related files (package.json, yarn.lock, Gemile, and Gemfile.lock) as well as
+the README. You'll also notice we exclude the `node_modules` directory because it already exists from a previous stage. The difference between
 our dev and test environments is that in test we mount the spec directory and for dev we do not (as we don't need it).
 
-The reason we go about this kinda obtuse way (manually mounting all directories that we want instead of mounting the entire app directory) is 
-that we want to use the `node_modules` directory we built earlier and if we mount the entire app directory from the host machine 
-we lose any existing files/folders in that directory. I did some investigation into installing the `node_modules` directory to a 
+The reason we go about this kinda obtuse way (manually mounting all directories that we want instead of mounting the entire app directory) is
+that we want to use the `node_modules` directory we built earlier and if we mount the entire app directory from the host machine
+we lose any existing files/folders in that directory. I did some investigation into installing the `node_modules` directory to a
 folder outside the app directory and it ended up being more trouble than it was worth.
 
 Wrapping up, this command takes in a command line argument, either `help`, `dev`, `test`, or `deploy` and then builds and runs the container
@@ -474,7 +474,7 @@ This looks complicated, but all it does is set up a headless chrome driver to ru
 ## Deploying to Production
 
 Now that we've got the hard parts out of the way, let's deploy our application to Heroku. We'll be using the
-[Heroku Container Registry](https://devcenter.heroku.com/articles/container-registry-and-runtime) to host our container, though 
+[Heroku Container Registry](https://devcenter.heroku.com/articles/container-registry-and-runtime) to host our container, though
 you can easily use any other container registry. Before we get into the actual deployment process, let's take a look at the last stage of our
 Dockerfile which contains the `prod` build target.
 
@@ -491,7 +491,7 @@ CMD ["bin/prod_entry"]
 ```
 
 Again, this looks really similar to our other environments, the main differences here are:
-1. Giving the production server access to our `/bin/prod_entry` file (in a more formalized environment we would want to set 
+1. Giving the production server access to our `/bin/prod_entry` file (in a more formalized environment we would want to set
 up a separate user and only give that user access to that file)
 1. Copying our `node_modules` directory over from the `node_deps` stage into the current stage *after* we copy in the application directory
 so that we don't overwrite `node_modules`.

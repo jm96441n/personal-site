@@ -1,8 +1,6 @@
----
-title: "About"
-draft: false
----
-
++++
+framed=true
++++
 
 {{<image
     src="/img/avatar.jpg"
