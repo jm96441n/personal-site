@@ -35,7 +35,7 @@ scalable distributed systems. Things I like (in no particular order):
 
 Some relevant links:
 
-Email: [john@johnmaguiredeveloper.com](mailto:john@johnmaguiredeveloper.com?subject=[WebsiteContact])
+Email: [john@jmaguire.tech](mailto:john@jmaguire.tech?subject=[WebsiteContact])
 
 [Github](https://github.com/jm96441n)
 

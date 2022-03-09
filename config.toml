@@ -61,9 +61,3 @@ paginate = 5
       logoText = "John Maguire"
       logoHomeLink = "/"
 
-    [languages.en.menu]
-      [[languages.en.menu.main]]
-        identifier = "blog"
-        name = "Blog"
-        url = "/"
-
