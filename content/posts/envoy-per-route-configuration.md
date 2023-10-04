@@ -10,23 +10,25 @@ description = "Detailing how to provide per route configuration to override list
 showFullContent = false
 +++
 
-When programming envoy via either the xds interface or through a static yaml file allows us to not only provide filter configuration for a listener, which will
+Envoy gives us the ability to not only provide filter configuration for a listener, which will
 apply to all routes attached to that listener, but we can also provide configuration on a per route basis that will
 override the filter configuration defined on the listener. The documentation is not super clear on how to do this, so I'm going
 to dive in on some examples to show how it's done and the potential pitfalls and footguns of doing so.
 
 ## Setup
+
 If you just want to read this post then you're all set to go! Otherwise if you want to follow along you'll need to setup
 a few things on your system. You will need docker in order to run the backend service we'll be routing envoy to,
-[func-e](https://func-e.io/) to run envoy, curl to make requests and test our setup, and finally the [example repo]()
-which has the envoy configuration files as well as a few scripts to get started and test your setup.
+[func-e](https://func-e.io/) to run envoy, curl to make requests and test our setup, and finally the [example repo](https://github.com/jm96441n/envoy-per-route-example)
+which has the envoy configuration files as well as a few scripts to get started and test your setup. In addition to run
+the tasks in the example you'll need either [make](https://www.gnu.org/software/make/) or [xz](https://github.com/joerdav/xc), if using `xc` replace `make` with `xc` in all the commands.
 
 ## Envoy Filters
 
 Before diving in, let's do a quick refresher on envoy filters. Envoy filters provide a way to extend the functionality
 of envoy and perform actions on requests and/or responses; such as applying rate limiting, header manipulation, or
-adding jwt authentication (you can see a full list of filters that envoy ships with
-[here](https://www.envoyproxy.io/docs/envoy/latest/api-v3/extensions/filters/network/http_connection_manager/v3/http_connection_manager.proto#extension-category-envoy-filters-http)).
+adding jwt authentication (you can see a full list of htpp filters that envoy ships with
+[here](https://www.envoyproxy.io/docs/envoy/latest/api-v3/extensions/filters/network/http_connection_manager/v3/http_connection_manager.proto#extension-category-envoy-filters-http) and the full list of network filters [here](https://www.envoyproxy.io/docs/envoy/latest/configuration/listeners/network_filters/network_filters)).
 These filters can apply to L3/L4 level traffic or L7 level traffic depending on the filter, for example jwt
 authentication can only apply to L7 traffic. Filters are typically defined on the listener and are grouped
 together into "filter chains", and a chain is chosen based on matching criteria on the request or you can specify a
@@ -119,9 +121,9 @@ static_resources:
 
 ```
 
-To run this first let's make sure that our backend service is read to serve requests by running `make setup` from the
-example repo. Next we can get envoy up and running with this configuration by running `make basic` from the repo, this
-utilizes `func-e` to run envoy for us. Now to check that our configuration is applied correctly we can run a few curl
+First let's make sure that our backend service is ready to serve requests by running `make setup` from the
+example repo. Next we can get envoy up and running with this configuration by running `make basic`, this
+utilizes `func-e` to run envoy for us using the configuration defined in `basic.yaml`. Now to check that our configuration is applied correctly we can run a few curl
 commands from another terminal:
 ```bash
 # the following will all return a 403
@@ -135,11 +137,11 @@ curl -H "role: user" localhost:10000/admin
 ```
 
 Now let's expand this a bit to include an additional constraint that when we match the `/admin` route we should check for a header of
-`role:admin` and all other routes should continue to function as is. We could set up an entirely different filter chain
+`role:admin` and all other routes should continue to function as is. Now, we could set up an entirely different filter chain
 to handle this, but that means repeating a bunch of configuration for what is a small override for the single route.
 
 ```yaml
-# routeConfig.yaml in the example repo
+# per-route.yaml in the example repo
 static_resources:
   listeners:
   - address:
@@ -233,10 +235,9 @@ static_resources:
                 port_value: 8080
 ```
 
-To run this first let's make sure that our backend service is read to serve requests by running `make setup` from the
-example repo. Next we can get envoy up and running with this configuration by running `make per-route` from the repo, this
-utilizes `func-e` to run envoy for us. Now to check that our configuration is applied correctly we can run a few curl
-commands from another terminal window:
+If you haven't already, make sure the backend service is ready to serve requests by running `make setup` from the
+example repo. Next we can get envoy up and running with this configuration by running `make per-route`.
+Now to check that our configuration is applied correctly we can run a few curl commands from another terminal window:
 
 ```bash
 # the following will all return a 403
@@ -250,10 +251,13 @@ curl -H "role: admin" localhost:10000/admin
 ```
 
 So we can see that we've now setup per route overrides for our RBAC configuration! We did this by adding a
-`typed_per_filter_config` field to our route configuration for the `/admin` route and specified the envoy rbac filter as
-the key and a [RBACPerRoute](https://www.envoyproxy.io/docs/envoy/latest/api-v3/extensions/filters/http/rbac/v3/rbac.proto#envoy-v3-api-msg-extensions-filters-http-rbac-v3-rbacperroute) type.
-The `typed_per_filter_config` is a simple map with a key of a string (the name of the filter) and the value is the
+`typed_per_filter_config` field to our route configuration for the `/admin` route and specified the envoy rbac filter
+type as
+the key and a value of [RBACPerRoute](https://www.envoyproxy.io/docs/envoy/latest/api-v3/extensions/filters/http/rbac/v3/rbac.proto#envoy-v3-api-msg-extensions-filters-http-rbac-v3-rbacperroute).
+The `typed_per_filter_config` is a map with a key of a string (the name of the filter) and the value is the
 actual per route filter to use (you can find the full list [here](https://www.envoyproxy.io/docs/envoy/latest/api-v3/extensions/filters/network/http_connection_manager/v3/http_connection_manager.proto#envoy-v3-api-field-extensions-filters-network-http-connection-manager-v3-httpfilter-name).)
+Of note as well is that you can add a `typed_per_filter_config` on either the virtual host, the route, or the route
+configuration.
 
 ## Footguns
 
@@ -273,4 +277,5 @@ route but leave all other routes unaffected.
 ## Wrapping Up
 
 Hopefully this clarifies how to override listener filters to have different filter configuration on a per route basis.
-As always feel free to reach out to me via email at [john@jmaguire.tech](mailto:john@jmaguire.tech?subject=[EnvoyPerRouteConfiguration])
+If you've been following along at home you can run `make teardown` in the example repo to stop the backend service.
+As always feel free to reach out to me via email at [john@jmaguire.tech](mailto:john@jmaguire.tech?subject=[EnvoyPerRouteConfiguration]).
