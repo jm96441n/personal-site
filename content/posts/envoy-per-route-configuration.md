@@ -21,7 +21,7 @@ If you just want to read this post then you're all set to go! Otherwise if you w
 a few things on your system. You will need docker in order to run the backend service we'll be routing envoy to,
 [func-e](https://func-e.io/) to run envoy, curl to make requests and test our setup, and finally the [example repo](https://github.com/jm96441n/envoy-per-route-example)
 which has the envoy configuration files as well as a few scripts to get started and test your setup. In addition to run
-the tasks in the example you'll need either [make](https://www.gnu.org/software/make/) or [xz](https://github.com/joerdav/xc), if using `xc` replace `make` with `xc` in all the commands.
+the tasks in the example you'll need either [make](https://www.gnu.org/software/make/) or [xc](https://github.com/joerdav/xc), if using `xc` replace `make` with `xc` in all the commands.
 
 ## Envoy Filters
 
@@ -41,7 +41,7 @@ Now that last sentence can make filters on listeners seem relatively inflexible 
 filters for different routes attached to a listener, say if you wanted to include more strict RBAC (Role Based Access
 Control) rules on an admin route than you would on other normal user routes. Without per route configuration you would need to setup a separate
 listener for all admin routes, which doesn't sound like a great UX and means keeping two listeners up to date with many
-of the same filters defined.
+of the same filters defined. This is where per route configuration comes in and can make our lives much easier.
 
 Let's look at an example for configuring separate RBAC rules for an admin route on a listener and walk through the
 specific points that we need to include to make this work.
@@ -50,7 +50,7 @@ specific points that we need to include to make this work.
 To start we're going to have an envoy configuration that applies an RBAC rule looking for a header matching `role:
 user` (this leaves a lot of trust to the client and really should never be used in a real situation, but it will work
 for what we're looking to demonstrate here.) In this configuration we set up a backend service to route to (in the
-example repo this is the (http-echo)[https://github.com/hashicorp/http-echo] service from Hashicorp) and we configure
+example repo this is the [http-echo](https://github.com/hashicorp/http-echo) service from Hashicorp) and we configure
 the listener to listen on port 10000 with a prefix match on the route so that we match all routes to go to this service.
 
 ```yaml
@@ -126,18 +126,18 @@ example repo. Next we can get envoy up and running with this configuration by ru
 utilizes `func-e` to run envoy for us using the configuration defined in `basic.yaml`. Now to check that our configuration is applied correctly we can run a few curl
 commands from another terminal:
 ```bash
-# the following will all return a 403
+# the following will all return a 403 with a message of "RBAC: permission denied"
 curl localhost:10000
 curl -H "role: admin" localhost:10000
 curl -H "role: admin" localhost:10000/admin
 
-# the following will all allow the request through
+# the following will allow the request through and we'll get a response of "Hello World"
 curl -H "role: user" localhost:10000
 curl -H "role: user" localhost:10000/admin
 ```
 
-Now let's expand this a bit to include an additional constraint that when we match the `/admin` route we should check for a header of
-`role:admin` and all other routes should continue to function as is. Now, we could set up an entirely different filter chain
+Now let's expand this a bit to include an additional constraint that when we match the `/admin` route we should enforce a RBAC rule that a header of
+`role:admin` must be present and all other routes should continue to function as is. Now, we could set up an entirely different filter chain
 to handle this, but that means repeating a bunch of configuration for what is a small override for the single route.
 
 ```yaml
@@ -240,12 +240,12 @@ example repo. Next we can get envoy up and running with this configuration by ru
 Now to check that our configuration is applied correctly we can run a few curl commands from another terminal window:
 
 ```bash
-# the following will all return a 403
+# the following will all return a 403 with a message of "RBAC: permission denied"
 curl localhost:10000
 curl -H "role: admin" localhost:10000
 curl -H "role: user" localhost:10000/admin
 
-# the following will all allow the request through
+# the following will allow the request through and we'll get a response of "Hello World"
 curl -H "role: user" localhost:10000
 curl -H "role: admin" localhost:10000/admin
 ```
